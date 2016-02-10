@@ -29,22 +29,38 @@ _
         },
         year => {
             schema => ['int*', min=>1990, max=>$cur_year],
+            cmdline_aliases => {y=>{}},
         },
+        # XXX channel, limit site to irclog.perlgeek.de/CHANNEL/
     },
+    examples => [
+        {
+            summary => 'Who mentions me?',
+            src => 'google-search-perl-irc-logs perlancar',
+            src_plang => 'bash',
+            test => 0,
+            'x.doc.show_result' => 0,
+        },
+        {
+            summary => 'Who mentions me in 2016?',
+            src => 'google-search-perl-irc-logs perlancar -y 2016',
+            src_plang => 'bash',
+            test => 0,
+            'x.doc.show_result' => 0,
+        },
+    ],
 };
 sub google_search_perl_irc_logs {
     require Browser::Open;
     require URI::Escape;
 
     my %args = @_;
-    # XXX schema
-    my $query = $args{query} or return [400, "Please specify query"];
 
     my $query = join(
         " ",
         "site:irclog.perlgeek.de",
-        @$query,
-        ($year ? ("inurl:/$year") : ()),
+        @{$args{query}},
+        ($args{year} ? ("inurl:/$args{year}") : ()),
 
         # skip text/raw version
         qq(-inurl:/text),
